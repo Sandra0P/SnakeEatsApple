@@ -1,20 +1,23 @@
+from distutils.command.build_scripts import first_line_re
 import pygame, random
 pygame.init()
 screenwidth, screenheight = 600, 400
-win = pygame.display.set_mode((screenwidth, screenheight))
-pygame.display.set_caption("Snake Game") 
+win = pygame.display.set_mode((screenwidth, screenheight)) #create game window
+pygame.display.set_caption("Snake Game")
 
-black = (0,0,0)
-white = (255,255,255)
-green = (0,128,0)
-blue = (0,0,255)
+#colors
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+GREEN = (0,128,0)
+BLUE = (0,0,255)
+PURPLE = (112, 51, 173)
 
-clock = pygame.time.Clock()
+clock = pygame.time.Clock() #controls game pulse
 
-class snake(object):
+class Snake(object):
     def __init__(self):
         self.head =[0,0] #coordinates of start of snake
-        self.coords = [self.head]
+        self.coords = [self.head] #list of all coordinates of snake body
         self.width = 10
         self.height = 10
         self.velocity = 10
@@ -23,13 +26,13 @@ class snake(object):
 
     def draw(self):
         for x in self.coords:
-            pygame.draw.rect(win, blue, [x[0], x[1], self.width, self.height])
+            pygame.draw.rect(win, BLUE, [x[0], x[1], self.width, self.height])
 
 
     def move(self, x_change, y_change, snakeLarger):
         # "head" is stored at end of list
         # every time this function runs - create new head, delete tail if snake length didn't change
-        if (x_change == 0) and (y_change == 0): #prevent unnecessary runs  when does this happen?
+        if (x_change == 0) and (y_change == 0): #prevent unnecessary runs 
             return
 
         #create new coordinates for head of snake
@@ -74,7 +77,7 @@ class Apple(object):
         self.generateCoord() #when apple is initialised automatically generates random coordinate location
 
     def draw(self):
-        pygame.draw.rect(win, green, [self.coord[0], self.coord[1], self.width, self.height])
+        pygame.draw.rect(win, GREEN, [self.coord[0], self.coord[1], self.width, self.height])
 
 
     def generateCoord(self):
@@ -100,34 +103,42 @@ class Apple(object):
 
 
 def redrawGameWindow(): #draw function that needs to be run at every loop
-    win.fill(black) #filling black color so we don't draw over previous rectangle
+    win.fill(BLACK) #filling black color so we don't draw over previous rectangle
     player.draw()
     apple.draw()
     pygame.display.update()
 
 
-def redrawMainWindow(message):
-    purple = (112, 51, 173)
-    win.fill(purple)
-    font = pygame.font.Font('freesansbold.ttf', 25)
-    text = font.render(message, True, black, purple)
-    textRect = text.get_rect()
-    textRect.center = (screenwidth // 2, screenheight // 2)
-    win.blit(text, textRect)
+def redrawMainWindow():
+    #introductory window that leads to game
+    text_height = 25
+    first_line_height = (screenheight // 2) - 15
+
+    win.fill(PURPLE)
+    font = pygame.font.Font('freesansbold.ttf', text_height)
+    gameName = font.render("SNAKE EATS APPLE", True, BLACK, WHITE)
+    text2 = font.render("Press SPACE to start", True, BLACK, PURPLE)
+    text3 = font.render("EXIT using top right X button", True, BLACK, PURPLE)
+    gameNameRect, textRect2, textRect3 = gameName.get_rect(), text2.get_rect(), text3.get_rect()
+    gameNameRect.center = (screenwidth // 2, first_line_height)
+    textRect2.center = (screenwidth // 2, first_line_height + 25)
+    textRect3.center = (screenwidth // 2, first_line_height + 50)
+    win.blit(gameName, gameNameRect)
+    win.blit(text2, textRect2)
+    win.blit(text3, textRect3)
     pygame.display.update()
 
-player = snake()
+player = Snake()
 
-#main loop
+#loop of main game
 def PlayGame():
-    snake_longer = False #keeps track of when snake needs to get larger
+    snake_longer = False #keeps track of when snake needs to get larger (longer)
     run = True
-    x_change = 0 #store coordinate changes
-    y_change = 0
+    x_change, y_change = 0, 0 #store coordinate changes
 
     while run:
         clock.tick(27)
-        if player.isClash() == True: #found that head clashes with other body part
+        if player.isClash() == True: #found that head clashes with its own body part
            run = False
 
         for event in pygame.event.get():
@@ -158,13 +169,6 @@ def PlayGame():
             snake_longer = True
             apple.generateCoord()
 
-        #use in editing mode - make snake larger from space
-        # if keys[pygame.K_SPACE]:
-        #     snake_longer = True
-
-
-        #old movement checks
-        #if (x_change > 0 and  player.head[0] <= screenwidth) or (x_change<0 and player.head[0] > 0) or (y_change < 0 and player.head[1] >= 0) or (y_change > 0 and player.head[1] <= screenheight):
         player.move(x_change, y_change, snake_longer) #always implements change to snakes coordinates. if no change occured keeps snake moving according to last instruction
         snake_longer = False
 
@@ -172,7 +176,7 @@ def PlayGame():
 
 Main = True
 while Main: #runs main page until receives instruction to run game
-    redrawMainWindow("Snake Eats Apple. Press SPACE to play")
+    redrawMainWindow()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -180,7 +184,6 @@ while Main: #runs main page until receives instruction to run game
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_SPACE]:
-        player = snake()
+        player = Snake()
         apple = Apple()
         PlayGame() #runs game until game ends naturally, then goes back to loop
-
