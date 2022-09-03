@@ -2,7 +2,7 @@ import pygame, random
 pygame.init()
 screenwidth, screenheight = 600, 400
 win = pygame.display.set_mode((screenwidth, screenheight))
-pygame.display.set_caption("Snake Game")
+pygame.display.set_caption("Snake Game") 
 
 black = (0,0,0)
 white = (255,255,255)
