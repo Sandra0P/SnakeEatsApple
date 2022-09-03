@@ -4,3 +4,5 @@ The game features moving blue blocks representing the snake and a single unmovin
 With every apple, the snails length increases by one block. The one rule is that the snake head may not come into contact with a part of itself, otherwise the game ends.
 It is possible to move through the boundaries of the screen.
 
+HOW TO RUN: run on any Python code editor, make sure PyGame is installed with "pip install pygame" (run this command in the terminal in your code editor directory)
+
